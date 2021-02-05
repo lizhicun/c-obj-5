@@ -23,7 +23,7 @@ Point foobar()
 ```
 原因都是因为Point是一种所谓的 Plain Old Data 声明形式。
 
-## 抽象数据类型
+### 抽象数据类型
 Point 的另一种声明，提供了完整的封装性，但没有 virtual function：
 ```
 class Point {
