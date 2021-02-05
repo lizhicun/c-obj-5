@@ -1,7 +1,7 @@
 # 第五章 构造、解构、拷贝语义学（Semantics of Construction, Destruction, and Copy）
 
-5.1 “无继承”情况下的对象构造
-下面的 Point 的声明，是一种所谓的 Plain Ol’ Data 声明形式：
+## 5.1 “无继承”情况下的对象构造
+下面的 Point 的声明，是一种所谓的 Plain Old Data 声明形式：
 ```
 typedef struct {
   float x, y, z;
@@ -21,9 +21,9 @@ Point foobar()
   return local;  // 最后的 return 语句传值也是一样，只是简单的位拷贝操作
 }
 ```
-原因都是因为Point是一种所谓的 Plain Ol’ Data 声明形式。
+原因都是因为Point是一种所谓的 Plain Old Data 声明形式。
 
-小标题：抽象数据类型
+## 抽象数据类型
 Point 的另一种声明，提供了完整的封装性，但没有 virtual function：
 ```
 class Point {
@@ -52,7 +52,7 @@ void mumble()
 ```
 这是因为函数的 activation record 被放进程序堆栈时，上述 initialization list 中的常量就可以被放进 local1 内存中了。
 
-小标题：为继承做准备
+### 为继承做准备
 ```
 class Point
  public:
@@ -70,7 +70,7 @@ virtual function 的引入使得：
 1.object 拥有一个 virtual table pointer；
 2.constructor 被附加了一些代码，以便将 vptr 初始化。
 
-5.3 vptr初始化语意学
+### 5.3 vptr初始化语意学
 当我们定义一个 PVertex object 时，constructors 的调用顺序是:
 ```
 Point(x, y);
