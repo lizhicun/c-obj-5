@@ -39,7 +39,9 @@ class Point {
   float _x, _y, _z;
 };
 ```
-我们也没有定义 copy constructor 或 copy operator，因为默认的位语义（default bitwise semantics）已经足够。也无需 destructor，默认的内存管理方法也够了
+我们也没有定义 copy constructor 或 copy operator，因为默认的位语义（default bitwise semantics）已经足够。也无需 destructor，默认的内存管理方法也够了.  
+
+
 如果要对 class 中的所有成员都设定常量初值，那么使用 explicit initialization list 会比较高效，比如
 ```
 void mumble()
@@ -53,7 +55,7 @@ void mumble()
   local2._z = 1.0;
 }
 ```
-local1 的初始化操作会比 local2 的高效。这是因为函数的 activation record 被放进程序堆栈时，上述 initialization list 中的常量就可以被放进 local1 内存中了。
+local1 的初始化操作会比 local2 的高效。这是因为函数的 activation record 被放进程序堆栈时，上述 initialization list 中的常量就可以被放进 local1 内存中了。  
 这是因为函数的 activation record 被放进程序堆栈时，上述 initialization list 中的常量就可以被放进 local1 内存中了。
 (Activation record is used to manage the information needed by a single execution of a procedure. An activation record is pushed into the stack when a procedure is called and it is popped when the control returns to the caller function.)
 
