@@ -56,7 +56,6 @@ void mumble()
 }
 ```
 local1 的初始化操作会比 local2 的高效。这是因为函数的 activation record 被放进程序堆栈时，上述 initialization list 中的常量就可以被放进 local1 内存中了。  
-这是因为函数的 activation record 被放进程序堆栈时，上述 initialization list 中的常量就可以被放进 local1 内存中了。
 (Activation record is used to manage the information needed by a single execution of a procedure. An activation record is pushed into the stack when a procedure is called and it is popped when the control returns to the caller function.)
 
 Explicit initialization list 带来三项缺点：
