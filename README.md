@@ -178,3 +178,37 @@ PVertex::PVertex( Pvertex* this, bool __most_derived,
 ```
 
 ## 对象复制语义学
+```
+class Point {
+ public:
+  Point( float x = 0.0, y = 0.0 );
+  //...(没有 virtual function)
+ protected:
+  float _x, _y;
+};
+```
+对于 Point class 的赋值操作
+```
+Poitn a, b;
+...
+a = b;
+```
+因为这里有 bitwise copy 语义，所以 implicit copy assignment operator 被视为毫无用处，所以不会被合成出来。  
+以下情况下, 不会表现出 bitwise copy 语义：
+* 当 class 内带一个 member object，而其 class 有一个 copy assignment operator 时。
+* 当一个 class 的 base class 有一个 copy assignment operator 时。
+* 当一个 class 声明了任何 virtual function（不能直接拷贝 vptr 的值，因为右边的 object 可能是一个 derived class object）。
+* 当 class 继承自一个 virtual base class （无论其有没有 copy operator）时。
+
+回顾下bitwise copy : https://guodong.plus/2020/0320-143335/
+
+## 解构语义学
+1. 如果 class 没有定义 destructor，那么只有在 class 内带的 member object （或是 class 自己的 base class）拥有 destructor 的情况下，编译器才会自动合成出一个。否则，destructor 被视为不需要，所以不会合成。  
+2. 如果一个 class 确实不需要 destructor，还为其定义 destructor 是不符合效率的，应该拒绝那种“对称策略”的奇怪想法：“已经定义了一个 constructor，那么当然需要提供一个 destructor”。  
+
+一个由程序员定义的 destructor 被扩展的方式类似 constructor 被扩展的方式，但顺序相反:
+* 如果 object 内带有一个 vptr，那么首相重设相关的 virtual table。
+* destructor 的函数本身现在被执行，也就是说 vptr 会在程序员的代码执行前被重设。
+* 如果 class 拥有 member class objects，而后者拥有 destructor，那么它们会以其声明顺序相反的顺序被调用。
+* 如果有任何直接的（上一层）nonvirtual base class 拥有 destructor，它们会以其声明顺序相反的顺序被调用。
+* 如果有任何 virtual base class 拥有 destructor，而当前讨论的这个 class 是最尾端（most-derived）的 class，那么它们会以原来的构造顺序的相反顺序被调用。
