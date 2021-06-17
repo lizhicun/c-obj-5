@@ -22,8 +22,8 @@ Point foobar()
   return local;  // 最后的 return 语句传值也是一样，只是简单的位拷贝操作
 }
 ```
-事实上，Point的trival constructor和destructor要不是没有被定义，就是没被调用。行为如它在c中的表现一样。  
-但global是例外，在 C 中，global 被视为“临时性的定义”，因为它没有明确的初始化操作，会放在程序 data segment 中一个“特别保留给未初始化之 global objects 使用”的空间，这块空间被称为 BSS。而 C++ 并不支持“临时性的定义”，global 在 C++ 中被视为完全定义。C 和 C++ 的一个差异就在于，BSS data segment 在 C++ 中相对不重要。C++ 的所有全局对象都被当作“初始化过的数据”来对待。
+* 事实上，Point的trival constructor和destructor要不是没有被定义，就是没被调用。行为如它在c中的表现一样。  
+* 但global是例外，在 C 中，global 被视为“临时性的定义”，因为它没有明确的初始化操作，会放在程序 data segment 中一个“特别保留给未初始化之 global objects 使用”的空间，这块空间被称为 BSS。而 C++ 并不支持“临时性的定义”，global 在 C++ 中被视为完全定义。C 和 C++ 的一个差异就在于，BSS data segment 在 C++ 中相对不重要。C++ 的所有全局对象都被当作“初始化过的数据”来对待。
 
 ### 抽象数据类型
 Point 的另一种声明，提供了完整的封装性，但没有 virtual function：
