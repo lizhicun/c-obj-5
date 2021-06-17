@@ -1,4 +1,5 @@
 # 第五章 构造、解构、拷贝语义学（Semantics of Construction, Destruction, and Copy）
+主要讲构造，析构和拷贝在不同的类中有不同的表现。
 
 ## 5.1 “无继承”情况下的对象构造
 下面的 Point 的声明，是一种所谓的 Plain Old Data 声明形式：
@@ -14,14 +15,15 @@ Point global;
 Point foobar()
 {
   Point local;  // 既没有被构造也没有被解构
-  Point *heap = new Point; // 再强调一次，并没有 default constructor 施行于 new 运算符所传回的 Point object 上
+  Point *heap = new Point; // 没有 default constructor 施行于 new 运算符所传回的 Point object 上
   *heap = local; // 赋值操作只是像 C 那样的纯粹位搬移操作
   // ...stuff...
   delete heap;  // destructor 和 constructor 一样，不是没产生出来，就是没被调用
   return local;  // 最后的 return 语句传值也是一样，只是简单的位拷贝操作
 }
 ```
-原因都是因为Point是一种所谓的 Plain Old Data 声明形式。
+事实上，Point的trival constructor和destructor要不是没有被定义，就是没被调用。行为如它在c中的表现一样。  
+但global是例外，在 C 中，global 被视为“临时性的定义”，因为它没有明确的初始化操作，会放在程序 data segment 中一个“特别保留给未初始化之 global objects 使用”的空间，这块空间被称为 BSS。而 C++ 并不支持“临时性的定义”，global 在 C++ 中被视为完全定义。C 和 C++ 的一个差异就在于，BSS data segment 在 C++ 中相对不重要。C++ 的所有全局对象都被当作“初始化过的数据”来对待。
 
 ### 抽象数据类型
 Point 的另一种声明，提供了完整的封装性，但没有 virtual function：
@@ -37,6 +39,7 @@ class Point {
   float _x, _y, _z;
 };
 ```
+我们也没有定义 copy constructor 或 copy operator，因为默认的位语义（default bitwise semantics）已经足够。也无需 destructor，默认的内存管理方法也够了
 如果要对 class 中的所有成员都设定常量初值，那么使用 explicit initialization list 会比较高效，比如
 ```
 void mumble()
@@ -50,8 +53,15 @@ void mumble()
   local2._z = 1.0;
 }
 ```
+local1 的初始化操作会比 local2 的高效。这是因为函数的 activation record 被放进程序堆栈时，上述 initialization list 中的常量就可以被放进 local1 内存中了。
 这是因为函数的 activation record 被放进程序堆栈时，上述 initialization list 中的常量就可以被放进 local1 内存中了。
+(Activation record is used to manage the information needed by a single execution of a procedure. An activation record is pushed into the stack when a procedure is called and it is popped when the control returns to the caller function.)
 
+Explicit initialization list 带来三项缺点：
+*只有当 class members 都是 public 时，此法才奏效。
+*只能指定常量，因为它们再编译时期就恶意被评估求值。
+*由于编译器并没有自动施行之，所以初始化行为的失败可能性会比较高一些。
+为继承
 ### 为继承做准备
 ```
 class Point
