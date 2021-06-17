@@ -78,6 +78,7 @@ class Point
 };
 ```
 这里并没有定义 copy constructor、copy operator、destructor。因为程序在默认语义之下表现良好.    
+  
 virtual function 的引入使得：
 * object 拥有一个 virtual table pointer；
 * constructor 被附加了一些代码，以便将 vptr 初始化。
@@ -92,7 +93,6 @@ constructor 可能会带有大量编译器为其扩展的代码：
 * 在那之前，所有上一层的 base class constructor 必须被调用
 * 在那之前，所有 virtual base class constructors 必须被调用
 * ... ...
-
 
 ### vptr初始化语意学
 当我们定义一个 PVertex object 时，constructors 的调用顺序是:
