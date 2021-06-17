@@ -58,10 +58,10 @@ local1 的初始化操作会比 local2 的高效。这是因为函数的 activat
 (Activation record is used to manage the information needed by a single execution of a procedure. An activation record is pushed into the stack when a procedure is called and it is popped when the control returns to the caller function.)
 
 Explicit initialization list 带来三项缺点：
-*只有当 class members 都是 public 时，此法才奏效。
-*只能指定常量，因为它们再编译时期就恶意被评估求值。
-*由于编译器并没有自动施行之，所以初始化行为的失败可能性会比较高一些。
-为继承
+* 只有当 class members 都是 public 时，此法才奏效。
+* 只能指定常量，因为它们再编译时期就恶意被评估求值。
+* 由于编译器并没有自动施行之，所以初始化行为的失败可能性会比较高一些。
+
 ### 为继承做准备
 ```
 class Point
@@ -76,11 +76,24 @@ class Point
   float _x, _y;
 };
 ```
+这里并没有定义 copy constructor、copy operator、destructor。因为程序在默认语义之下表现良好.    
 virtual function 的引入使得：
-1.object 拥有一个 virtual table pointer；
-2.constructor 被附加了一些代码，以便将 vptr 初始化。
+* object 拥有一个 virtual table pointer；
+* constructor 被附加了一些代码，以便将 vptr 初始化。
 
-### 5.3 vptr初始化语意学
+### 继承体系下的对象构造
+```
+T obj;
+```
+constructor 可能会带有大量编译器为其扩展的代码：
+* member initialization list 中的 data members 初始化操作会被放进 constructor 的函数本身
+* 如果有 member 没有出现在 member initialization list 中，但它有一个 default constructor，那么该 default constructor 必须被调用
+* 在那之前，所有上一层的 base class constructor 必须被调用
+* 在那之前，所有 virtual base class constructors 必须被调用
+* ... ...
+
+
+### vptr初始化语意学
 当我们定义一个 PVertex object 时，constructors 的调用顺序是:
 ```
 Point(x, y);
@@ -104,7 +117,7 @@ Point3d::Point3d( float x, float y, float z )
 答：在 Point3d constructor 中调用的 size() 函数，必须被决议为 Point3d::size()
 
 问：为什么必须决议为Point3d::size()
-答：PVertex constructor 执行完毕之前，PVertex 并不是一个完整的对象，没法求size.
+答：PVertex constructor 执行完毕之前，PVertex 并不是一个完整的对象.
 
 此时我们的目标是：每一个 base class constructor 被调用时，编译器必须保证有适当的 size() 函数实体被调用。
 
@@ -163,3 +176,4 @@ PVertex::PVertex( Pvertex* this, bool __most_derived,
 }
 ```
 
+## 对象复制语义学
